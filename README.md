@@ -1,26 +1,28 @@
 # STM32 Audio Warmup
 
-STM32F407G-DISC1 kartı üzerindeki kart üstü MP45DT02 dijital PDM mikrofonuyla
-gerçek zamanlı ses sınıflandırması yapan 2 haftalık bir ısınma (warmup)
-projesi. Hedef üç sınıf: **sessizlik**, **ıslık** ve **alkış**.
+STM32F411E-DISCO kartı üzerindeki kart üstü MP45DT02/IMP34DT05 dijital PDM
+mikrofonuyla gerçek zamanlı ses sınıflandırması yapan 2 haftalık bir ısınma
+(warmup) projesi. Hedef üç sınıf: **sessizlik**, **ıslık** ve **alkış**.
 
 Amaç; STM32CubeMX ile donanım konfigürasyonunu kurmak, PC tarafında Python ile
 veri toplayıp Keras ile küçük bir sınıflandırıcı eğitmek ve X-CUBE-AI ile bu
-modeli STM32F407 üzerinde gerçek zamanlı çalıştırmaktır.
+modeli STM32F411 üzerinde gerçek zamanlı çalıştırmaktır.
 
 ## Donanım
 
-- **Kart:** STM32F407G-DISC1 (STM32F407VG, Cortex-M4F, FPU)
-- **Mikrofon:** Kart üstü MP45DT02 dijital PDM MEMS mikrofon
-  - STM32F407'de SAI veya DFSDM periferi **yoktur**. PDM verisi
-    **I2S2 (half-duplex master receive) + DMA** ile okunur ve yazılım
-    tarafında **PDM2PCM** kütüphanesiyle PCM'e dönüştürülür.
-  - Başlangıç noktası: STM32CubeF4 paketinde `Audio_playback_and_record`
-    adıyla arayın (klasör yolu paket sürümüne göre değişebilir); mikrofon
-    kayıt kısmı referans alınacak.
+- **Kart:** STM32F411E-DISCO (STM32F411VET6, 512 KB Flash, 128 KB RAM,
+  100 MHz, Cortex-M4F)
+- **Mikrofon:** Kart üstü PDM MEMS mikrofon — kart revizyonuna göre
+  **MP45DT02 (rev B)** veya **IMP34DT05 (rev D)**; her ikisi de PDM arayüzlü.
+  - STM32F411'de SAI veya DFSDM periferi **yoktur**. PDM verisi
+    **I2S + DMA** ile okunur ve yazılım tarafında **PDM2PCM**
+    kütüphanesiyle PCM'e dönüştürülür (kesin I2S periferi/pin ataması için
+    bkz. `firmware/README.md`).
+  - Başlangıç noktası: STM32CubeF4 paketindeki F411E-Discovery BSP ve
+    `Audio_playback_and_record` örneği (bkz. `firmware/README.md`).
 - **PC iletişimi:** Kartta ST-LINK üzerinden sanal COM portu **yoktur**.
   PC ile haberleşme **USART2 (PA2/PA3)** üzerinden, harici bir **3.3V
-  USB-TTL (USB-seri) adaptör** ile yapılır.
+  USB-TTL (USB-seri) adaptör** ile yapılır (pinleri UM1842'den doğrulayın).
 - **Programlama/Debug:** Kart üstü entegre ST-LINK/V2
 
 ## Araçlar
@@ -48,10 +50,10 @@ vektörleriyle birebir aynı temsille çalışır.
 
 - **Gün 1-2:** Ortam kurulumu (STM32CubeIDE, STM32CubeMX, X-CUBE-AI paketi),
   kartı tanıma, LED blink ile toolchain doğrulama.
-- **Gün 3-4:** CubeMX ile I2S2 (half-duplex master receive) + DMA
-  konfigürasyonu, PDM2PCM entegrasyonu; STM32CubeF4 paketindeki
-  `Audio_playback_and_record` örneği (bkz. Donanım bölümü) referans
-  alınarak PDM mikrofon okumasının çalıştığının doğrulanması.
+- **Gün 3-4:** CubeMX ile I2S + DMA konfigürasyonu, PDM2PCM entegrasyonu;
+  F411E-Discovery BSP ve `Audio_playback_and_record` örneği (bkz.
+  `firmware/README.md`) referans alınarak PDM mikrofon okumasının
+  çalıştığının doğrulanması.
 - **Gün 5-6:** USART2 (PA2/PA3) + USB-TTL adaptör üzerinden PC iletişiminin
   kurulması; CMSIS-DSP ile kart üzerinde FFT tabanlı bant enerjisi özellik
   çıkarımının yazılması ve özellik vektörlerinin CSV olarak UART'tan

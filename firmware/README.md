@@ -6,8 +6,8 @@ STM32CubeIDE + STM32CubeMX projesi buraya gelecek: `.project`, `.cproject`,
 
 ## Kapsam
 
-- CubeMX ile I2S2 (half-duplex master receive) + DMA üzerinden MP45DT02 PDM
-  mikrofon okuması, PDM2PCM ile PCM'e dönüştürme.
+- CubeMX ile I2S + DMA üzerinden kart üstü PDM mikrofon (MP45DT02 rev B /
+  IMP34DT05 rev D) okuması, PDM2PCM ile PCM'e dönüştürme.
 - CMSIS-DSP ile kart üzerinde FFT tabanlı bant enerjisi özellik çıkarımı.
 - USART2 (PA2/PA3) üzerinden özellik vektörlerinin CSV formatında PC'ye
   gönderilmesi.
@@ -16,18 +16,27 @@ STM32CubeIDE + STM32CubeMX projesi buraya gelecek: `.project`, `.cproject`,
 
 ## Referans Örnek
 
-PDM mikrofon okuma ve I2S2 konfigürasyonu için başlangıç noktası:
-STM32CubeF4 paketinde `Audio_playback_and_record` adıyla arayın (klasör
-yolu paket sürümüne göre değişebilir); mikrofon kayıt kısmı referans
-alınacak.
+PDM mikrofon okuma ve I2S konfigürasyonu için başlangıç noktaları,
+STM32CubeF4 paketi içinde:
+
+- `Projects\STM32F411E-Discovery\Applications\Audio\Audio_playback_and_record`
+  (özellikle `waverecorder.c`)
+- `Projects\STM32F411E-Discovery\Examples\BSP` (`AudioRecord_Test`)
 
 ## PDM2PCM Notları
 
 - PDM2PCM kütüphanesi **donanım CRC** birimi gerektirir — CubeMX'te CRC
   periferi etkinleştirilmeli.
-- 16 kHz mono çıkış için mikrofon saat frekansı **1.024 MHz**;
-  I2S PLL değerleri: **PLLN = 213**, **PLLR = 4**.
-- DMA: **SPI2_RX**, **DMA1 Stream3**, peripheral-to-memory yönü; half
-  complete / full complete callback'leri ile çift tamponlama (double
-  buffering) kullanılacak.
-- Mikrofon pinleri: **PB10 (CLK)**, **PC3 (DOUT)**.
+- I2S periferi/pin ataması, saat konfigürasyonu (PLLN/PLLR) ve DMA
+  stream/kanal seçimi kart-özeldir: **F411E-Discovery BSP ve yukarıdaki
+  örnekten alınacak**, pinler **UM1842** (STM32F411E-DISCO kullanım
+  kılavuzu) pin tablosundan doğrulanacak — burada sabit değer
+  varsayılmayacak.
+- Half complete / full complete DMA callback'leri ile çift tamponlama
+  (double buffering) kullanılacak.
+
+## USART2 Notu
+
+PC iletişimi için kullanılan **USART2 (PA2/PA3)** pin ataması da
+**UM1842 pin tablosundan doğrulanmalı** (başka bir periferiyle çakışma
+olmadığından emin olmak için).

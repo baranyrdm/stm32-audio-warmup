@@ -1,0 +1,54 @@
+# --- STM32CubeIDE / Eclipse build output ---
+Debug/
+Release/
+**/Debug/
+**/Release/
+.metadata/
+*.launch
+
+# Not ignored (committed intentionally): .project, .cproject, *.ioc
+
+# --- Build artifacts ---
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.list
+*.su
+
+# X-CUBE-AI generated network sources are kept (not ignored):
+# X-CUBE-AI/App/network*.c, X-CUBE-AI/App/network*.h
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.ipynb_checkpoints/
+
+# --- Project data / model artifacts ---
+data/raw/*
+!data/raw/.gitkeep
+*.wav
+*.pcm
+
+training/models/*
+!training/models/final/
+*.h5
+*.keras
+*.tflite
+
+# Keep final trained models even though the extensions above are ignored
+!training/models/final/**
+
+# --- Keep READMEs and placeholders even in ignored dirs ---
+!**/README.md
+!**/.gitkeep
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.vscode/
